@@ -14,7 +14,9 @@ class ControllerHandler
      */
     public function create(Request $request)
     {
-        $controllerName = "\\App\\Controllers\\" . $request->getGet()["controller"] . "Controller";
+        $params = explode("/", explode(\Config\App\URL_PATH, $request->getUri())[1]);
+
+        $controllerName = "\\App\\Controllers\\" . $params[0] . "Controller";
         $obj = new $controllerName();
         $obj->setRequest($request);
         return $obj;

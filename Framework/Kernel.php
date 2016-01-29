@@ -30,7 +30,7 @@ class Kernel
         $request->setGet($_GET);
         $request->setPost($_POST);
         $request->setSession(new Session($_SESSION));
-        $request->setUri('http' . (isset($_SERVER['HTTPS']) ? 's' : '') . '://' . "{$_SERVER['HTTP_HOST']}/{$_SERVER['REQUEST_URI']}");
+        $request->setUri($_SERVER["REQUEST_URI"]);
 
         $controller = ControllerHandler::instance()->create($request);
         $result = $controller->executeAction();

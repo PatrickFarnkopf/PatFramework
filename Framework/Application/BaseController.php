@@ -24,7 +24,8 @@ abstract class BaseController
 
     public function executeAction()
     {
-        $action = $this->request->getGet()["action"];
+        $params = explode("/", explode(\Config\App\URL_PATH, $this->request->getUri())[1]);
+        $action = $params[1];
         return $this->$action();
     }
 }
