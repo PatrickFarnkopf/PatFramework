@@ -15,16 +15,9 @@ class Kernel
     private function __construct()
     { }
 
-    public function start($root = false)
+    public function start($applicationRoot)
     {
-        if ($root === false)
-        {
-            $this->applicationRoot = $_SERVER['DOCUMENT_ROOT'];
-        }
-        else
-        {
-            $this->applicationRoot = $root;
-        }
+        $this->applicationRoot = $applicationRoot;
 
         $request = new Request();
         $request->setGet($_GET);
@@ -32,6 +25,13 @@ class Kernel
         $request->setSession(new Session($_SESSION));
         $request->setUri($_SERVER["REQUEST_URI"]);
 
+        $this->draw($request);
+
+        return null;
+    }
+
+    private function draw(Request $request)
+    {
         $controller = ControllerHandler::instance()->create($request);
         $result = $controller->executeAction();
 
@@ -43,7 +43,12 @@ class Kernel
             case "double":
                 return $result;
             case "object":
-                throw new Exception("not supported");
+                switch (get_class($result))
+                {
+                    case "Framework\\Application\\ActionResult":
+                        eval("?>" . $result->view() . "<?php");
+                        return "";
+                }
             default:
                 throw new Exception("not supported");
         }

@@ -12,4 +12,4 @@ function __autoload($namespace)
         require_once $path;
 }
 
-echo \Framework\Kernel::instance()->start();
+echo \Framework\Kernel::instance()->start(dirname(__FILE__));

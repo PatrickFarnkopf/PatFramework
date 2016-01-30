@@ -8,6 +8,6 @@ class TestController extends BaseController
 {
     public function index()
     {
-        return "Hello World";
+        return $this->view("Test");
     }
 }
