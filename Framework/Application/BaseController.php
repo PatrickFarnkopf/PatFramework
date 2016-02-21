@@ -14,6 +14,8 @@ abstract class BaseController
      */
     protected $request;
 
+    protected $route;
+
     public function setRequest(Request $request)
     {
         $this->request = $request;
@@ -27,7 +29,7 @@ abstract class BaseController
     public function executeAction()
     {
         $params = explode("/", explode(\Config\App\URL_PATH, $this->request->getUri())[1]);
-        $action = $params[1];
+        $action = $this->route->getAction();
         return $this->$action();
     }
 
@@ -36,5 +38,10 @@ abstract class BaseController
         $template = new Template();
         $template->setFile(Kernel::instance()->getApplicationRoot() . "/../App/Views/" . $templateName . ".phtml");
         return new ActionResult($template);
+    }
+
+    public function setRoute(Route $route)
+    {
+        $this->route = $route;
     }
 }

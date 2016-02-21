@@ -10,4 +10,9 @@ class TestController extends BaseController
     {
         return $this->view("Test");
     }
+
+    public function test()
+    {
+        return "test";
+    }
 }

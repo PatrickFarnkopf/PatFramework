@@ -18,16 +18,16 @@ class Kernel
     public function start($applicationRoot)
     {
         $this->applicationRoot = $applicationRoot;
+        include $this->applicationRoot . "/../App/routes.php";
 
         $request = new Request();
         $request->setGet($_GET);
         $request->setPost($_POST);
         $request->setSession(new Session($_SESSION));
         $request->setUri($_SERVER["REQUEST_URI"]);
+        $request->setRequestType($_SERVER['REQUEST_METHOD']);
 
-        $this->draw($request);
-
-        return null;
+        return $this->draw($request);
     }
 
     private function draw(Request $request)

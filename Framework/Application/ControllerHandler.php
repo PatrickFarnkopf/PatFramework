@@ -14,11 +14,16 @@ class ControllerHandler
      */
     public function create(Request $request)
     {
-        $params = explode("/", explode(\Config\App\URL_PATH, $request->getUri())[1]);
-
-        $controllerName = "\\App\\Controllers\\" . $params[0] . "Controller";
+        $routeName = explode(\Config\App\URL_PATH, $request->getUri())[1];
+        $route = Route::findRoute($routeName, $request->getRequestType() == 'GET' ? Route::METHOD_GET : Route::METHOD_POST);
+        if ($route == null)
+            $route = Route::getDefault();
+        
+        $controllerName = "\\App\\Controllers\\" . $route->getControllerName();
         $obj = new $controllerName();
         $obj->setRequest($request);
+        $obj->setRoute($route);
+
         return $obj;
     }
 

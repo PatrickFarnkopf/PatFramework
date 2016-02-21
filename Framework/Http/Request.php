@@ -10,11 +10,10 @@ class Request
     private $get  = [];
     private $session;
     private $sessionId;
+    private $requestType;
 
     public function __construct()
-    {
-
-    }
+    { }
 
     public function getUri()
     {
@@ -44,6 +43,16 @@ class Request
     public function setGet(array $get)
     {
         $this->get = $get;
+    }
+
+    public function getRequestType()
+    {
+        return $this->requestType;
+    }
+
+    public function setRequestType($requestType)
+    {
+        $this->requestType = $requestType;
     }
 
     public function setSession(Session $session)
