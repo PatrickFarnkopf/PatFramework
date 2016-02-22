@@ -4,6 +4,7 @@ namespace Framework\Application;
 
 
 use Framework\Http\Request;
+use Framework\Http\Url;
 use Framework\Kernel;
 use Framework\Views\Patemp\Template;
 
@@ -45,5 +46,10 @@ abstract class BaseController
     public function setRoute(Route $route)
     {
         $this->route = $route;
+    }
+
+    public function redirectAction($url)
+    {
+        Url::Redirect($url);
     }
 }
