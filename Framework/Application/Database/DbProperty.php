@@ -14,12 +14,18 @@ class DbProperty
     protected $modelPropertyName;
     protected $dbPropertyName;
     protected $dbPropertyType;
+    protected $dbPropertyAutoIncrement;
 
-    public function __construct($modelName, $dbName, $dbType = self::TYPE_VARCHAR)
+    public function __construct($modelName, $dbName, $dbType = self::TYPE_VARCHAR, $autoincrement = false)
     {
         $this->modelPropertyName = $modelName;
         $this->dbPropertyName = $dbName;
         $this->dbPropertyType = $dbType;
+    }
+
+    public function hasAutoIncrement()
+    {
+        return $this->dbPropertyAutoIncrement;
     }
 
     public function getModelPropertyName()

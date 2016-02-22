@@ -11,6 +11,11 @@ class Test extends DbModel
     private $id;
     private $test;
 
+    public function __construct()
+    {
+        parent::__construct();
+    }
+
     public function setId($id)
     {
         $this->id = $id;
@@ -33,7 +38,7 @@ class Test extends DbModel
 
     protected function loadMapping()
     {
-        $this->map(new DbProperty('id', 'id', DbProperty::TYPE_INT));
+        $this->map(new DbProperty('id', 'id', DbProperty::TYPE_INT, true));
         $this->map(new DbProperty('test', 'test', DbProperty::TYPE_VARCHAR));
     }
 }

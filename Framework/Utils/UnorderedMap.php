@@ -74,4 +74,9 @@ abstract class UnorderedMap
     {
         return var_export($this->data, true);
     }
+
+    public function First()
+    {
+        return array_values($this->data)[0];
+    }
 }

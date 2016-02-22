@@ -2,15 +2,16 @@
 
 namespace Framework\Application\Database;
 
-
 abstract class DbModel
 {
     protected $isNew = true;
     protected $tableMap = [];
     protected $keys = [];
+    protected $tableName;
 
-    protected function __construct()
+    public function __construct()
     {
+        $this->tableName = $this->getClassName();
         $this->loadMapping();
     }
 
@@ -41,37 +42,106 @@ abstract class DbModel
         $this->keys[$key] = $propertyKey;
     }
 
-    public function get(array $where)
+    public function get(array $where = [])
     {
         $this->isNew = false;
+        $condition = DbModel::buildWhere($where);
+        $query = "SELECT * FROM $this->tableName " . ($condition != null ? 'WHERE ' . $condition : "");
 
-        // Todo: do db stuff
+        $datastore = new DbModelStore();
 
-        return $this;
+        $itr = 0;
+        $stmt = DbConnection::getDefault()->prepare($query);
+        $stmt->execute();
+
+        while ($row = $stmt->fetch(\PDO::FETCH_ASSOC))
+        {
+            $classname = get_class($this);
+            $model = new $classname;
+
+            foreach ($this->tableMap as $prop)
+            {
+                $setter = "set" . ucfirst($prop->getModelPropertyName());
+                $model->$setter($row[$prop->getDbPropertyName()]);
+            }
+
+            $model->isNew = false;
+
+            $datastore->Add($itr++, $model);
+        }
+
+        return $datastore;
     }
 
     public function delete()
     {
         $this->isNew = false;
+        $query = "DELETE FROM $this->tableName WHERE ";
+        $condition = [];
 
-        // Todo: do db stuff
+        foreach ($this->tableMap as $prop)
+        {
+            $getter = "get" . ucfirst($prop->getModelPropertyName());
+            $condition[] = $prop->getDbPropertyName() . " = '" . $this->$getter() . "'";
+        }
+
+        $query .= implode(" AND ", $condition);
+        $stmt = DbConnection::getDefault()->prepare($query);
+        $stmt->execute();
 
         unset($this);
     }
 
     public function save()
     {
-        if ($this->isNew)
+        $dbValues = [];
+        $dbProps = [];
+
+        foreach ($this->tableMap as $prop)
         {
-            // Todo: do insert
-        }
-        else
-        {
-            // Todo: do update
+            $getter = "get" . ucfirst($prop->getModelPropertyName());
+
+            if ($prop->hasAutoIncrement() && $this->$getter() == null)
+                $dbValues[] = "NULL";
+            else
+                $dbValues[] = "'" . $this->$getter() . "'";
+
+            $dbProps[] = $prop->getDbPropertyName();
         }
 
+        $query = "REPLACE INTO $this->tableName (" . implode(",", $dbProps) . ") VALUES (" . implode(",", $dbValues) . ")";
+        $stmt = DbConnection::getDefault()->prepare($query);
+        $stmt->execute();
+
         $this->isNew = false;
+
         return $this;
+    }
+
+    protected static function buildWhere(array $where)
+    {
+        $conditionStr = "";
+        $condition = [];
+
+        foreach ($where as $cell => $data)
+        {
+            $condition[] = $cell . " = " . $data;
+        }
+
+        if (count($condition) > 0)
+        {
+            $conditionStr = implode(" AND ", $condition);
+            return $conditionStr;
+        }
+
+        return null;
+    }
+
+    public function getClassName()
+    {
+        $fullName = get_class($this);
+        $parts = explode("\\", $fullName);
+        return $parts[count($parts) - 1];
     }
 
     protected abstract function loadMapping();

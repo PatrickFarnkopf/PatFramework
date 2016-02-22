@@ -13,6 +13,12 @@ class TestController extends BaseController
 
     public function test()
     {
+        $testObject = new \App\Models\Test();
+        
+        $dbObject = $testObject->get()->First();
+        $dbObject->setTest("Neuer Wert");
+        $dbObject->save();
+
         return "test";
     }
 }
