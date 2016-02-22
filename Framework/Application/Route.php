@@ -2,6 +2,8 @@
 
 namespace Framework\Application;
 
+use Framework\Http\Request;
+
 class Route
 { 
     const METHOD_POST   = 0;
@@ -14,6 +16,7 @@ class Route
     private $action;
     private $method;
     private $isDefaultRoute;
+    private $parameters = [];
 
     private function __construct($routeName, $controllerName, $action, $method) 
     {
@@ -40,15 +43,50 @@ class Route
         return $this->action;
     }
 
+    public static function getRouteParameters(Route $route, Request $request)
+    {
+        $requestRoute = explode("/", $request->getRoutePart());
+        $defRoute = explode("/", $route->routeName);
+        $parameterStore = [];
+
+        for ($i = 0; $i < count($requestRoute); ++$i)
+        {
+            if ($defRoute[$i] == "{value}")
+            {
+                $parameterStore[] = $requestRoute[$i];
+            }
+        }
+
+        return $parameterStore;
+    }
+
     public static function findRoutesByName($routeName)
     {
         $routes = [];
 
         foreach (self::$routes as $route)
         {
-            if ($route->routeName == $routeName)
+            $isCompatible = false;
+            $elements = explode("/", $route->routeName);
+            $reqElements = explode("/", $routeName);
+
+            if (count($elements) == count($reqElements))
             {
-                $routes[] = $route;
+                for ($i = 0; $i < count($elements); ++$i)
+                {
+                    if ($elements[$i] == "{value}" || $elements[$i] == $reqElements[$i])
+                    {
+                        $isCompatible = true;
+                    }
+                    else
+                    {
+                        $isCompatible = false;
+                        break;
+                    }
+                }
+
+                if ($isCompatible)
+                    $routes[] = $route;
             }
         }
 

@@ -7,6 +7,7 @@ use Framework\Application\ControllerHandler;
 use Framework\Application\Exception;
 use Framework\Http\Request;
 use Framework\Http\Session;
+use Framework\Http\Url;
 
 class Kernel
 {
@@ -46,7 +47,8 @@ class Kernel
                 switch (get_class($result))
                 {
                     case "Framework\\Application\\ActionResult":
-                        eval("?>" . $result->view() . "<?php");
+                        $viewData = $controller->viewData;
+                        eval("?>" . $result->view());
                         return "";
                 }
             default:

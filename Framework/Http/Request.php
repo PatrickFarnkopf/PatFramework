@@ -64,4 +64,16 @@ class Request
     {
         return $this->session;
     }
+
+    public function getRoutePart()
+    {
+        $routeName = explode(\Config\App\URL_PATH, $this->getUri());
+
+        if (count($routeName) > 1)
+            $routeName = $routeName[1];
+        else
+            $routeName = "";
+
+        return $routeName;
+    }
 }

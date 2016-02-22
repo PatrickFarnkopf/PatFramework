@@ -14,8 +14,7 @@ class ControllerHandler
      */
     public function create(Request $request)
     {
-        $routeName = explode(\Config\App\URL_PATH, $request->getUri())[1];
-        $route = Route::findRoute($routeName, $request->getRequestType() == 'GET' ? Route::METHOD_GET : Route::METHOD_POST);
+        $route = Route::findRoute($request->getRoutePart(), $request->getRequestType() == 'GET' ? Route::METHOD_GET : Route::METHOD_POST);
         if ($route == null)
             $route = Route::getDefault();
         

@@ -8,7 +8,7 @@ class Compiler
     private function __construct()
     { }
 
-    public function build(Template $template)
+    public function build(Template $template, array $data = [])
     {
         $buffer = $template->getContent();
 
@@ -24,6 +24,8 @@ class Compiler
 
             $buffer = str_replace($logic[0][$key], ($mustEcho ? "<?=" : '<?php ') . $value . ' ?>', $buffer);
         }
+
+        //$buffer = '<?php $viewData = ' . serialize($data) . ';' . $buffer;
 
         return $buffer;
     }
