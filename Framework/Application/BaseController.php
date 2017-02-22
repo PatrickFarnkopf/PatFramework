@@ -33,7 +33,7 @@ abstract class BaseController
     {
         $action = $this->route->getAction();
         $parameters = Route::getRouteParameters($this->route, $this->request);
-        return call_user_method_array($action, $this, $parameters);
+        return call_user_func_array([ $this, $action ], [ $this, $parameters ]);
     }
 
     public function view($templateName)
